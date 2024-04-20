@@ -42,39 +42,75 @@ fn checkout(name: String) -> () {
 Check status gets a list of files and whether they are modified 
 */
 #[tauri::command]
-fn status(name: String) -> String { //return type temp for debugging
+fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugging
     if cfg!(target_os = "windows"){
-        let _ = std::process::Command::new("svn")
+        let output = std::process::Command::new("svn")
             .arg("status") //change to svn Status
+            .arg("-v")
             .current_dir("/")
-            .output()
-            .expect("Failed to run the svn status command");
+            .output();
+        //println!("{:?}", output.expect("Error").stdout.into_iter().map(|x: u8| x as char).collect::<String>());
+        let ret_string: String = output.expect("Error doing thing").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        println!("{}", ret_string);
+        let mut ret_files: std::vec::Vec<String> = Vec::new();
+        let mut line: String = String::new();
+        for c in ret_string.chars() {
+            if c == '\n'{
+                ret_files.push(line);
+                line = String::new();
+            }
+            line.push(c);
+        }
+        return ret_files;
     }
     else {
         let output = std::process::Command::new("svn")
             .arg("status")//change to svn status
-            .current_dir("/home/dominic/Documents/SVN") //note hardcoded change dominic to be userprofile 
+            .arg("-v")
+            .current_dir("/home/dominic/Documents/SVN/repo") //note hardcoded change dominic to be userprofile 
             .output();
+        //println!("{:?}", output.expect("Error").stdout.into_iter().map(|x: u8| x as char).collect::<String>());
+        let ret_string: String = output.expect("Error doing thing").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        println!("{}", ret_string);
+        let mut ret_files: std::vec::Vec<String> = Vec::new();
+        let mut line: String = String::new();
+        for c in ret_string.chars() {
+            if c == '\n'{
+                ret_files.push(line);
+                line = String::new();
+            }
+            line.push(c);
+        }
+        return ret_files;
     }
-    "dhc".to_string()
 }
 
 #[tauri::command]
-fn commit(selected_files: std::vec::Vec<String>) {
-    let mut file_string: String = String::new();
-    for file in selected_files {
-        file_string = " ".to_string() + &file;
+fn commit(selected_files: std::vec::Vec<String>, message: String) -> () {
+    if cfg!(target_os = "windows"){
+        let output = std::process::Command::new("svn")
+            .arg("commit")
+            .arg("-m")
+            .arg(&message)
+            .current_dir("/home/dominic/Documents/SVN")//change dominic to userid fix this to work on windows ds
+            .output();
     }
-    let commit_command = std::process::Command::new("svn")
-        .arg(&file_string)
-        .output();
+    else{
+        let output = std::process::Command::new("svn")
+            .arg("commit")
+            .arg("-m")
+            .arg(&message)
+            .current_dir("/home/dominic/Documents/SVN") //change dominic to userid
+            .output();
+    }
 }
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
                                                 checkout, 
-                                                status])
+                                                status,
+                                                commit])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
