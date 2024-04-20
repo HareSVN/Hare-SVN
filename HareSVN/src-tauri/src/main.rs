@@ -8,25 +8,25 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn get_files(repo: String) -> std::Vec<String> {
-    
+fn get_files(repo: String) -> std::vec::Vec<String> {
+    let ret: std::vec::Vec<String> = Vec::new();
+    ret
 }
 
 #[tauri::command]
 fn checkout(folder_name: String) {
-    std::fs::create_dir(folder_name)?;
+    std::fs::create_dir(folder_name);
 }
 
 #[tauri::command]
-fn commit(selected_files: std::Vec<String>) {
+fn commit(selected_files: std::vec::Vec<String>) {
     let mut file_string: String = String::new();
     for file in selected_files {
-        file_string = " " + file;
+        file_string = " ".to_string() + &file;
     }
-    let commit_command: std::process::Command = std::process::Command::new("svn")
+    let commit_command = std::process::Command::new("svn")
         .arg(&file_string)
-        .output()
-        .map_err(|e|, format!("Failed to execute command {}", e))?;
+        .output();
 }
 
 fn main() {
