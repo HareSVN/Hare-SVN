@@ -1,25 +1,9 @@
+use std::process::Command;
+
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String{
-    let output = if cfg!(target_os = "windows") {
-        std::process::Command::new("cmd")
-            .args(["/C", "mkdir ~/test"])
-            .output()
-            .expect("failed to execute process")
-    } else {
-        std::process::Command::new("sh")
-            .arg("-c")
-            .arg("mkdir ~/Documents/SVN")
-            .output()
-            .expect("failed to execute process")
-    };
-    
-    let hello = output.stdout;
-    return hello.into_iter().map(|x| x as char).collect::<String>();
-}
+
 
 /*
 Redesign so it is not stupid
