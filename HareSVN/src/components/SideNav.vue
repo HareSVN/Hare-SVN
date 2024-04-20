@@ -8,7 +8,7 @@ async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
   temp.value.push(input.value)
   input.value = ""
-  result.value = await invoke("greet", { name: input.value });
+  result.value = await invoke("checkout", { name: input.value });
 }
 </script>
 
