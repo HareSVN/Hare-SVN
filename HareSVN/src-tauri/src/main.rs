@@ -1,4 +1,3 @@
-use std::process::Command;
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
@@ -93,7 +92,7 @@ fn commit(selected_files: std::vec::Vec<String>) {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, 
+        .invoke_handler(tauri::generate_handler![ 
                                                 checkout, 
                                                 check_status])
         .run(tauri::generate_context!())
