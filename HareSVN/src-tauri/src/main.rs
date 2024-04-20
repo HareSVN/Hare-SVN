@@ -4,22 +4,29 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-/*
-#[tauri::command]
-fn checkout(folder_name: String) {
-    
+    return format!("Hello, {}! You've been greeted from Rust!", name);
 }
 
 #[tauri::command]
-fn check_status() {
-    //maybe
-    let check_command = std::process::Command::new("svn checkout")
-        .output()
-        .expect("Failed to execute command");
+fn checkout(repo_name: String) {
+    if !std::path::Path::new("Documents/SVN/").exists() {
+        let _ = std::process::Command::new("cd");
+        let _ = std::process::Command::new("cd Documents");
+        let _ = std::process::Command::new("mkdir SVN");
+    }
+    let _ = std::process::Command::new("cd");
+    let _ = std::process::Command::new("cd Documents/SVN");
+    let _ = std::process::Command::new("svn checkout")
+        .arg(repo_name);
+        
 }
-*/
+
+#[tauri::command]
+fn check_status(folder_name: String) {
+    let check_command = std::process::Command::new("svn status")
+        .output();
+}
+
 #[tauri::command]
 fn commit(selected_files: std::vec::Vec<String>) {
     let mut file_string: String = String::new();
