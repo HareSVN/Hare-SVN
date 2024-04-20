@@ -1,5 +1,3 @@
-use std::process::Command;
-
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -7,12 +5,12 @@ use std::process::Command;
 #[tauri::command]
 fn greet(name: &str) -> String{
     let output = if cfg!(target_os = "windows") {
-        Command::new("cmd")
+        std::process::Command::new("cmd")
             .args(["/C", "mkdir ~/test"])
             .output()
             .expect("failed to execute process")
     } else {
-        Command::new("sh")
+        std::process::Command::new("sh")
             .arg("-c")
             .arg("mkdir ~/Documents/SVN")
             .output()
@@ -28,53 +26,72 @@ Redesign so it is not stupid
 May not have to have a return value
 */
 #[tauri::command]
-fn checkout(name: String) -> String {
+fn checkout(name: String) -> () {
     if cfg!(target_os = "windows") {
         if !std::path::Path::new("~/Documents/SVN").exists(){
-            let output = Command::new("cmd")
+            let _ = std::process::Command::new("cmd")
                 .args(["/C", "mkdir ~/test"])
                 .output()
                 .expect("failed to execute process");
         }
-        let output = Command::new("cmd")
+        let _ = std::process::Command::new("cmd")
             .args(["/C", "cd ~/Documents/SVN"])
             .output()
             .expect("Changing dir to SVN");
-        let output = Command::new("cmd")
+        let _ = std::process::Command::new("cmd")
             .args(["/C", "svn checkout", &name])
             .output()
             .expect("Repo failed to chekc out");
     } 
     else {
         if !std::path::Path::new("~/Documents/SVN").exists(){
-            let output = Command::new("sh")
+            let _ = std::process::Command::new("sh")
                 .arg("-c")
                 .arg("mkdir ~/Documents/SVN")
                 .output()
                 .expect("failed to execute process");
         }
-        let output = Command::new("sh")
+        let _ = std::process::Command::new("sh")
             .args(["-c", "cd ~/Documents/SVN"])
             .output()
             .expect("Changing dir to SVN");
-        let output = Command::new("sh")
+        let _ = std::process::Command::new("sh")
             .args(["-c", "svn checkout", &name])
             .output()
             .expect("Repo failed to chekc out");
     };
-    let output = Command::new("sh")
-        .args(["echo", "Shut up"])
-        .output()
-        .expect("Shut up nerd I hate rust");
-    
-    let hello = output.stdout;
-    return hello.into_iter().map(|x| x as char).collect::<String>();
 }
 
+/*
+Check status gets a list of files and whether they are modified 
+*/
 #[tauri::command]
-fn check_status(folder_name: String) {
-    let check_command = std::process::Command::new("svn status")
-        .output();
+fn check_status(name: String) -> String { //return type temp for debugging
+    if cfg!(target_os = "windows"){
+        let _ = std::process::Command::new("sh")
+            .args(["/C", "cd ~/Documents/SVN"])
+            .output()
+            .expect("Failed to change directories");
+        let _ = std::process::Command::new("cmd")
+            .args(["/C", "touch this.txt"]) //change to svn Status
+            .output()
+            .expect("Failed to run the svn status command");
+    }
+    else {
+        /*
+        let _ = std::process::Command::new("sh")
+            .args(["-c", "cd ~/Documents/SVN"])
+            .output()
+            .expect("Failed to change directories");
+        */
+        let path: &std::path::Path = std::path::Path::new("~/Documents/SVN");
+        let _ = std::env::set_current_dir(&path);
+        let _ = std::process::Command::new("sh")
+            .args(["-c", "touch ", "sttuff.txt"]) //change to svn status
+            .output()
+            .expect("Failed to run the svn status command");
+    }
+    "dhc".to_string()
 }
 
 #[tauri::command]
@@ -90,7 +107,9 @@ fn commit(selected_files: std::vec::Vec<String>) {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, checkout])
+        .invoke_handler(tauri::generate_handler![greet, 
+                                                checkout, 
+                                                check_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
