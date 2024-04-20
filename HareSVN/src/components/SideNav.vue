@@ -8,7 +8,7 @@ const active = defineModel("repo")
 async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
   temp.value.push(input.value)
-  result.value = await invoke("greet", { name: input.value });
+  result.value = await invoke("status", { name: input.value });
   input.value = ""
 }
 function changeActive(item:string){

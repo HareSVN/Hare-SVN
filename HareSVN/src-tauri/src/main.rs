@@ -18,11 +18,7 @@ fn checkout(name: String) -> () {
                 .expect("failed to execute process");
         }
         let _ = std::process::Command::new("cmd")
-            .args(["/C", "cd ~/Documents/SVN"])
-            .output()
-            .expect("Changing dir to SVN");
-        let _ = std::process::Command::new("cmd")
-            .args(["/C", "svn checkout", &name])
+            .args(["/C", "svn checkout ", &name, " ~/Documents/SVN"])
             .output()
             .expect("Repo failed to chekc out");
     } 
@@ -34,47 +30,31 @@ fn checkout(name: String) -> () {
                 .output()
                 .expect("failed to execute process");
         }
-        let _ = std::process::Command::new("sh")
-            .args(["-c", "cd ~/Documents/SVN"])
-            .output()
-            .expect("Changing dir to SVN");
-        let _ = std::process::Command::new("sh")
-            .args(["-c", "svn checkout", &name])
+        let ouput = std::process::Command::new("sh")
+            .args(["-c ", "svn checkout ", &name, " ~/Documents/SVN"])
             .output()
             .expect("Repo failed to chekc out");
-    };
-    
-    
+        println!("test: {:?}", ouput);
+    };    
 }
 
 /*
 Check status gets a list of files and whether they are modified 
 */
 #[tauri::command]
-fn check_status(name: String) -> String { //return type temp for debugging
+fn status(name: String) -> String { //return type temp for debugging
     if cfg!(target_os = "windows"){
-        let _ = std::process::Command::new("sh")
-            .args(["/C", "cd ~/Documents/SVN"])
-            .output()
-            .expect("Failed to change directories");
-        let _ = std::process::Command::new("cmd")
-            .args(["/C", "touch this.txt"]) //change to svn Status
+        let _ = std::process::Command::new("svn")
+            .arg("status") //change to svn Status
+            .current_dir("/")
             .output()
             .expect("Failed to run the svn status command");
     }
     else {
-        /*
-        let _ = std::process::Command::new("sh")
-            .args(["-c", "cd ~/Documents/SVN"])
-            .output()
-            .expect("Failed to change directories");
-        */
-        let path: &std::path::Path = std::path::Path::new("~/Documents/SVN");
-        let _ = std::env::set_current_dir(&path);
-        let _ = std::process::Command::new("sh")
-            .args(["-c", "touch ", "sttuff.txt"]) //change to svn status
-            .output()
-            .expect("Failed to run the svn status command");
+        let output = std::process::Command::new("svn")
+            .arg("status")//change to svn status
+            .current_dir("/home/dominic/Documents/SVN") //note hardcoded change dominic to be userprofile 
+            .output();
     }
     "dhc".to_string()
 }
@@ -94,7 +74,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
                                                 checkout, 
-                                                check_status])
+                                                status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
