@@ -1,15 +1,21 @@
+use std::process::Output;
+
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-
+fn get_user()->String{
+    let mut user = std::process::Command::new("whoami").output().expect("bad get").stdout.into_iter().map(|x| x as char).collect::<String>();
+    user.pop();
+    return user
+}
 
 /*
 Redesign so it is not stupid
 May not have to have a return value
 */
 #[tauri::command]
-fn checkout(name: String) -> () {
+fn checkout(url:String, name: String) -> () {
     if cfg!(target_os = "windows") {
         if !std::path::Path::new("~/Documents/SVN").exists(){
             let _ = std::process::Command::new("cmd")
@@ -30,8 +36,18 @@ fn checkout(name: String) -> () {
                 .output()
                 .expect("failed to execute process");
         }
-        let ouput = std::process::Command::new("sh")
-            .args(["-c ", "svn checkout ", &name, " ~/Documents/SVN"])
+        if !std::path::Path::new(&format!("~/Documents/SVN/{name}")).exists(){
+            let _ = std::process::Command::new("sh")
+                .arg("-c")
+                .arg(format!("mkdir ~/Documents/SVN/{name}"))
+                .output()
+                .expect("failed to execute process");
+        }
+        let user = get_user();
+        let ouput = std::process::Command::new("svn")
+            .arg("checkout")
+            .arg(&url)
+            .arg(format!("/home/{user}/Documents/SVN/{name}"))
             .output()
             .expect("Repo failed to chekc out");
         println!("test: {:?}", ouput);
@@ -51,10 +67,13 @@ fn status(name: String) -> String { //return type temp for debugging
             .expect("Failed to run the svn status command");
     }
     else {
+        let user = get_user();
         let output = std::process::Command::new("svn")
             .arg("status")//change to svn status
-            .current_dir("/home/dominic/Documents/SVN") //note hardcoded change dominic to be userprofile 
-            .output();
+            .current_dir(format!("/home/{user}/Documents/SVN")) //note hardcoded change dominic to be userprofile 
+            .output()
+            .expect("bad get");
+        println!("{:?}", output.stdout.into_iter().map(|x| x as char).collect::<String>());
     }
     "dhc".to_string()
 }
