@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import SideNav from "./components/SideNav.vue"
+
+
 </script>
 
 <template>
-  <div class="bg-yellow-300">
-    Hello World
-  </div>
+  <SideNav></SideNav>
 </template>
 
 <style scoped>
