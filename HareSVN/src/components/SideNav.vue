@@ -43,6 +43,7 @@ function setItemCSS(item){
         <div v-for="item in temp" :key="item" @click="changeActive(item)" :class="setItemCSS(item)">{{item}}</div>
       </div>
       {{active }}
+      {{ result }}
     </div>
 
 </template>
