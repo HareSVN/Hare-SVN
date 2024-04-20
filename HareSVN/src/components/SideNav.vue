@@ -4,21 +4,19 @@ import { invoke } from '@tauri-apps/api/tauri'
 const temp = ref(["one", "two", "three"])
 const input = ref("")
 const result = ref("")
-const active = ref("")
+const active = defineModel("repo")
 async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
   temp.value.push(input.value)
   result.value = await invoke("greet", { name: input.value });
   input.value = ""
 }
-function changeActive(item){
+function changeActive(item:string){
   active.value = item
-  let isActive = "bg-red-200"
-  if (active ==item)
-      isActive = "bg-blue-200"
+  
 }
 
-function setItemCSS(item){
+function setItemCSS(item:string){
   let isActive = "bg-red-200"
   console.log(active, item)
   if (active.value == item)
@@ -42,8 +40,6 @@ function setItemCSS(item){
       <div>
         <div v-for="item in temp" :key="item" @click="changeActive(item)" :class="setItemCSS(item)">{{item}}</div>
       </div>
-      {{active }}
-      {{ result }}
     </div>
 
 </template>
