@@ -88,5 +88,4 @@ async function updateRepo() {
         </div>
       </div>
     </div>
-
 </template>

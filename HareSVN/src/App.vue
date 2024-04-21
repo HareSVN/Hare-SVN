@@ -42,7 +42,7 @@ async function updateFiles(){
 </script>
 
 <template>
-    <div class="flex grid-cols-2">
+    <div class="flex grid-cols-2 min-w-screen min-h-screen">
       <SideNav class="" v-model:repo="repo" v-model:files="files"></SideNav>
       <div class="flex flex-col w-full min-h-screen justify-between">
         <MainScreen class=" pt-3" v-model:selected="selected" :repo="repo" :files = "files" @update-files="updateFiles" ></MainScreen>

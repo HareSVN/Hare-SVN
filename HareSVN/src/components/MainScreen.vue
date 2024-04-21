@@ -37,8 +37,7 @@ function updateFiles(){
 
 <template>
     <div class="flex flex-col w-full min-h-screen justify-between">
-
-        <ul class="block w-full bg-gray-50">
+        <ul class="block w-full h-full bg-gray-50">
             <div class="grid grid-cols-2 pb-4">
                 <div class="text-center font-bold">
                     <h1>Status</h1>
@@ -61,7 +60,9 @@ function updateFiles(){
                 <hr class="border-1">
             </li>
         </ul>
-        <SubmitBar :selected="selected" :repo="props.repo" @update-files="updateFiles"></SubmitBar>
+        <div class="w-full h-[10%]">
+            <SubmitBar :selected="selected" :repo="props.repo" @update-files="updateFiles"></SubmitBar>
+        </div>
     </div>
 </template>
 
