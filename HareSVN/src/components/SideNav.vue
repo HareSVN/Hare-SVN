@@ -20,6 +20,7 @@ async function changeActive(item:string){
   active.value = item
   result.value = []
    let temp:Array<string>= await invoke("status", { name:item });
+    console.log(temp)
    temp.map((file:string)=>{
       let temp= file.split(" ").filter((character)=> character != "")
       if (temp[0].charAt(temp[0].length-1) == "?" && temp[temp.length-1] != "."){
@@ -30,6 +31,9 @@ async function changeActive(item:string){
       }
       else if (temp[0].charAt(temp[0].length-1) == "M" && temp[temp.length-1] != "."){
         result.value.push({status: "Modified", fileName: temp[temp.length-1]})
+      }
+      else if (temp[0].charAt(temp[0].length-1) == "!" && temp[temp.length-1] != "."){
+        result.value.push({status: "Deleted", fileName: temp[temp.length-1]})
       }
       else if(temp[temp.length-1] != "." && temp[temp.length-1] != ""){
         result.value.push({status: "Up To Date", fileName: temp[temp.length-1]})
