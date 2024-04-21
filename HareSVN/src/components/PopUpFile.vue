@@ -9,6 +9,7 @@ async function submitFile(e:any){
     popup.value = false
     await invoke("create", {file: dir.value, name: props.repo}) 
     emit('updateFiles')
+    await invoke('update', {name:props.repo})
 }
 
 </script>

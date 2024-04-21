@@ -79,20 +79,16 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
         let mut line: String = String::new();
         for c in ret_string.chars() {
             if c == '\n'{
+                line = line.trim().to_string();
+                if line.starts_with(">"){
+                    return ret_files;
+                }
                 ret_files.push(line);
                 line = String::new();
             }
             line.push(c);
         }
-        let mut real_ret: std::vec::Vec<String> = Vec::new();
-        for file in ret_files{
-            if file.starts_with("/"){
-                real_ret.push(file);
-            }
-        }
-        println!("files: {:?}", real_ret);
-        return real_ret;
-        //return ret_files;
+        return ret_files;
     }
     else {
         let output = std::process::Command::new("svn")
@@ -106,20 +102,17 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
         let mut line: String = String::new();
         for c in ret_string.chars() {
             if c == '\n'{
+                line = line.trim().to_string();
+                if line.starts_with(">"){
+                    return ret_files;
+                }
                 ret_files.push(line);
                 line = String::new();
             }
             line.push(c);
         }
         return ret_files;
-        let mut real_ret: std::vec::Vec<String> = Vec::new();
-        for file in ret_files{
-            println!("file: {:?}", file);
-            real_ret.push(file.split_ascii_whitespace().last().unwrap().to_string())
-        }
-        println!("files: {:?}", real_ret);
-        return real_ret;
-        //return ret_files;
+        
     }
 }
 
