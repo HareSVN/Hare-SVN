@@ -2,14 +2,18 @@
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri'
 const temp = ref(["one", "two", "three"])
-const input = ref("")
+const input = ref({
+  url: "",
+  name: "",
+})
 const result = ref("")
 const active = defineModel("repo")
 async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
-  temp.value.push(input.value)
-  result.value = await invoke("status", { name: input.value });
-  input.value = ""
+  input.value.name = input.value.url.substring(input.value.url.lastIndexOf("/") + 1, input.value.url.length)
+  temp.value.push(input.value.name)
+  result.value = await invoke("checkout", { url: input.value.url, name: input.value.name });
+  input.value = {url: "", name:""}
 }
 function changeActive(item:string){
   active.value = item
@@ -32,7 +36,7 @@ function setItemCSS(item:string){
         <div class="flex mt-2 text-center bg-gray-200">
           <label for="email" class="block font-medium text-sm text-gray text-center">Enter Repository URL</label>
           <div class=" flex mt-1 my-2 px-2 justify-center">
-            <input id="repo" name="repo" v-model = "input" type="text" required class="block w-full bg-gray-100 rounded-md py-1 pl-2 mt-2 ring-1 ring-gray-400 shadow-md {{ if active == item ? 'text-blue-100' :'text-red-400'}}">
+            <input id="repo" name="repo" v-model = "input.url" type="text" required class="block w-full bg-gray-100 rounded-md py-1 pl-2 mt-2 ring-1 ring-gray-400 shadow-md {{ if active == item ? 'text-blue-100' :'text-red-400'}}">
           </div>
         </div>
       </form>
