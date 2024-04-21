@@ -16,7 +16,13 @@ async function addRepo(e: { preventDefault: () => void; }){
   checkout.value = await invoke("checkout", { url: input.value.url, name: input.value.name });
   input.value = {url: "", name:""}
 }
+const revision = ref("")
+
+async function displayRevision(){
+  revision.value = await invoke("revision", {name: active.value})
+}
 async function changeActive(item:string){
+  displayRevision()
   active.value = item
   result.value = []
    let temp:Array<string>= await invoke("status", { name:item });
@@ -63,6 +69,9 @@ function setItemCSS(item:string){
         </div>
       </form>
       <hr>
+      <div>
+        <p>Revision Number: {{ revision }}</p>
+      </div>
       <div>
         <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">{{item.name}}</div>
       </div>
