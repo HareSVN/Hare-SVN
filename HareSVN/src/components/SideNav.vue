@@ -2,7 +2,7 @@
 import PopUpFile from "./PopUpFile.vue"
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri'
-const temp = ref([{url:"http:10.8.110.18/repo", name: "repo"}])
+const temp = ref<Array<{url:string, name:string}>>([])
 const input = ref({
   url: "",
   name: "",
