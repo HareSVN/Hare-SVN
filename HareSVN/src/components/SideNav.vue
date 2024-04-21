@@ -71,7 +71,7 @@ async function updateRepo() {
 <template>
     <div class="min-h-screen min-w-[20%] bg-gray-100 border-r-2">
       <form v-on:submit="addRepo">
-        <div class="flex mt-2 text-center bg-gray-200">
+        <div class="flex text-center bg-gray-200">
           <label for="repo" class="block font-bold text-sm text-center">Enter Repository URL</label>
           <div class="flex mt-1 my-2 px-2 justify-center">
             <input id="repo" name="repo" v-model = "input.url" type="text" required class="block w-full bg-gray-100 rounded-md pl-1 m-1 shadow-md">
@@ -87,8 +87,10 @@ async function updateRepo() {
           <div class="pl-5">
             {{item.name}}
           </div>
-          <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
-          <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
+          <div class="flex items-end">
+            <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
+            <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
+          </div>
         </div>
       </div>
     </div>

@@ -25,7 +25,7 @@
 </script>
 
 <template>
-    <div class="grid grid-cols-5 h-full w-full bg-slate-600">
+    <div class="grid grid-cols-5 h-full w-full bg-gray-200">
         <div class="grid grid-cols-1 justify-items-stretch h-full w-full">
             <input id="repo" name="repo" v-model = "msg" type="text" placeholder="commit message" required class="block w-full bg-gray-100 rounded-md my-4 px-1 ring-1 ring-gray-400 shadow-md {{ if active == item ? 'text-blue-100' :'text-red-400'}}"></input>
         </div>
