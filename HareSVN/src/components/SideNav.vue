@@ -40,9 +40,6 @@ async function changeActive(item:string){
       }
       return file.split(" ").filter((character)=> character != "")
     })
-    console.log(result.value)
-
-  
 }
 
 function setItemCSS(item:string){

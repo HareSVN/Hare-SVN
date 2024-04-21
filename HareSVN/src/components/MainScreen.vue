@@ -3,6 +3,7 @@ import { RefSymbol } from '@vue/reactivity';
 import { ref } from 'vue';
 import SubmitBar from "./SubmitBar.vue";
 const props = defineProps(['repo', 'files'])
+const emit = defineEmits(['updateFiles'])
 const selected =ref<Array<string>>([])
 function clickItem(fileName:string){
     let found=false
@@ -27,6 +28,10 @@ function setItemCSS(item:string){
       isActive = "bg-gray-300"
 
   return `grid grid-cols-2 py-2 ${isActive}`
+}
+function updateFiles(){
+    console.log("UPDATING FILES")
+    emit('updateFiles')
 }
 </script>
 
@@ -57,7 +62,7 @@ function setItemCSS(item:string){
             </li>
             {{ selected }}
         </ul>
-        <SubmitBar :selected="selected" :repo="props.repo"></SubmitBar>
+        <SubmitBar :selected="selected" :repo="props.repo" @update-files="updateFiles"></SubmitBar>
     </div>
 </template>
 
