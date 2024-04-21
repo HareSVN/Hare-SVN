@@ -102,6 +102,10 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
     }
 }
 
+/*
+Untested
+Runs svn commit in repo of choice
+*/
 #[tauri::command]
 fn commit(message: String) -> () {
     if cfg!(target_os = "windows"){
@@ -123,6 +127,7 @@ fn commit(message: String) -> () {
 }
 
 /*
+Untested
 The filelist will be a list of file to be added to svn 
 name will be the folder they are in
 How do we actually signify this -> todo
@@ -151,13 +156,106 @@ fn add(filelist: std::vec::Vec<String>, name: String) -> () {
     }
 }
 
+/*
+Untested
+Function to execute svn update, must select repository first
+*/
+fn update(name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        let _ = std::process::Command::new("svn")
+            .arg("update")
+            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS !!!!!!!!!!
+            .output();        
+    }
+    else{
+        let _ = std::process::Command::new("svn")
+            .arg("update")
+            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .output();
+    }
+}
+
+/*
+Untested
+Takes the svn info command and reduces it to the revision number
+*/
+fn revision(name: String) -> String {
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        let output = std::process::Command::new("svn")
+            .arg("info")
+            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS
+            .output();
+        let info: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        let mut revision_line: String = String::new();
+        for l in info.lines() {
+            if l.contains("Revision"){
+                revision_line = l.to_string();
+            }
+        }
+        let mut ret: String = String::new();
+        for c in revision_line.chars() {
+            if c.is_digit(10) {
+                ret.push(c);
+            }
+        }
+        return ret;
+    }
+    else{
+        let output = std::process::Command::new("svn")
+            .arg("info")
+            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .output();
+        let info: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        let mut revision_line: String = String::new();
+        for l in info.lines() {
+            if l.contains("Revision"){
+                revision_line = l.to_string();
+            }
+        }
+        let mut ret: String = String::new();
+        for c in revision_line.chars() {
+            if c.is_digit(10) {
+                ret.push(c);
+            }
+        }
+        return ret;
+    }
+}
+/*
+Untested
+This returns the entire result from the svn log command, may format as needed
+*/
+fn history(name: String) -> String {
+    let user: String = get_user();
+    if !cfg(target_os = "windows"){
+        let output = std::process::Command::new("svn")
+            .arg("log")
+            .current_dir("/home/{user}/Documents/SVN/{name}")//NOT WINDOWS!!
+            .output();
+        let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        return ret;
+    }
+    else{
+        let output = std::process::Command::new("svn")
+            .arg("log")
+            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .output();
+        let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        return ret;
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
                                                 checkout, 
                                                 status,
                                                 commit,
-                                                add])
+                                                add,
+                                                update,
+                                                revision])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
