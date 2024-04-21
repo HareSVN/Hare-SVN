@@ -2,11 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components{
-    .input-field {
-        @apply block w-full bg-gray-100 rounded-md py-1 pl-2 mt-2 ring-1 ring-gray-400 shadow-md 
-    }
-    .button-primary{
-        @apply block w-full bg-blue-500 rounded-md p-1.5 ring-1 ring-black shadow-md hover:bg-blue-400 hover:ring hover:ring-blue-600 
-    }
-}
