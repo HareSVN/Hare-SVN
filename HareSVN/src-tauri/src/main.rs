@@ -103,7 +103,7 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
 }
 
 #[tauri::command]
-fn commit(selected_files: std::vec::Vec<String>, message: String) -> () {
+fn commit(message: String) -> () {
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("commit")
@@ -122,12 +122,42 @@ fn commit(selected_files: std::vec::Vec<String>, message: String) -> () {
     }
 }
 
+/*
+The filelist will be a list of file to be added to svn 
+name will be the folder they are in
+How do we actually signify this -> todo
+*/
+#[tauri::command]
+fn add(filelist: std::vec::Vec<String>, name: String) -> () {
+    let mut squashed_list: String = String::new();
+    for file in filelist {
+        squashed_list += &file;
+        squashed_list.push(' '); //hacky
+    }
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        let _ = std::process::Command::new("svn")
+            .arg("add")
+            .arg(squashed_list)
+            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS!!!!!!!!!!!! <--------------------------
+            .output();
+    }
+    else{
+        let _ = std::process::Command::new("svn")
+            .arg("add")
+            .arg(squashed_list)
+            .current_dir("/home/{user}/Documents/SVN/{name}")//repo is temporary
+            .output();
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
                                                 checkout, 
                                                 status,
-                                                commit])
+                                                commit,
+                                                add])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

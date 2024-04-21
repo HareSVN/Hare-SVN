@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SideNav from "./components/SideNav.vue"
 import MainScreen from "./components/MainScreen.vue"
+import SubmitBar from "./components/SubmitBar.vue"
 import { ref } from 'vue';
 
 
@@ -12,6 +13,7 @@ const files = ref([{status:"", fileName:""}])
   <div class="flex grid-cols-2">
     <SideNav class="" v-model:repo="repo" v-model:files="files"></SideNav>
     <MainScreen class="pl-10 pt-3" :repo="repo" :files = "files"></MainScreen>
+    <SubmitBar></SubmitBar>
   </div>
 </template>
 
