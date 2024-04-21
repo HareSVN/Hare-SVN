@@ -1,4 +1,4 @@
-use std::io::prelude::*;
+use std::{io::prelude::*, process::Output};
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
@@ -304,12 +304,13 @@ fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
     }
     else{
         println!("path: {:?}", format!("/home/{user}/Documents/SVN/{name}"));
-        let _ = std::process::Command::new("svn")
+        let output = std::process::Command::new("svn")
             .arg("delete")
             .arg("--force")
             .args(filelist)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//repo is temporary
             .output();
+        println!("{:?}", output);
     }
 }
 

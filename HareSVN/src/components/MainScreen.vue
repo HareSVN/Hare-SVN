@@ -31,6 +31,7 @@ function setItemCSS(item:string){
 }
 function updateFiles(){
     console.log("UPDATING FILES")
+    selected.value = []
     emit('updateFiles')
 }
 </script>
@@ -60,6 +61,7 @@ function updateFiles(){
                 <hr class="border-1">
             </li>
         </ul>
+        {{ selected }}
         <div class="w-full h-[10%]">
             <SubmitBar :selected="selected" :repo="props.repo" @update-files="updateFiles"></SubmitBar>
         </div>
