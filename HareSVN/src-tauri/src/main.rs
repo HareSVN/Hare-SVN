@@ -187,7 +187,6 @@ fn update(name: String) -> () {
 }
 
 /*
-Untested
 Takes the svn info command and reduces it to the revision number
 */
 #[tauri::command]
@@ -259,6 +258,11 @@ fn history(name: String) -> String {
     }
 }
 
+#[tauri::command]
+fn revert(name: String) -> () {
+
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
@@ -268,7 +272,8 @@ fn main() {
                                                 add,
                                                 update,
                                                 revision,
-                                                history])
+                                                history,
+                                                revert])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
