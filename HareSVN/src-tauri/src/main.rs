@@ -59,6 +59,7 @@ Check status gets a list of files and whether they are modified
 */
 #[tauri::command]
 fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugging
+    let user = get_user();
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("status") //change to svn Status
@@ -77,10 +78,18 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
             }
             line.push(c);
         }
-        return ret_files;
+        let mut real_ret: std::vec::Vec<String> = Vec::new();
+        for file in ret_files{
+            let path: String = String::from(format!("/home/{user}/Documents/{name}/{file}"));//varies based on os
+            let file_path: &std::path::Path = std::path::Path::new(&path);
+            if file_path.exists(){
+                real_ret.push(file);
+            }
+        }
+        return real_ret;
+        //return ret_files;
     }
     else {
-        let user = get_user();
         let output = std::process::Command::new("svn")
             .arg("status")//change to svn status
             .arg("-v")
@@ -98,7 +107,17 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
             }
             line.push(c);
         }
-        return ret_files;
+        let mut real_ret: std::vec::Vec<String> = Vec::new();
+        for file in ret_files{
+            let path: String = String::from(format!("/home/{user}/Documents/{name}/{file}"));//varies based on os
+            let file_path: &std::path::Path = std::path::Path::new(&path);
+            println!("File path: {:?}", file_path.display());
+            if file_path.is_file(){
+                real_ret.push(file);
+            }
+        }
+        return real_ret;
+        //return ret_files;
     }
 }
 
@@ -138,13 +157,6 @@ How do we actually signify this -> todo
 */
 #[tauri::command]
 fn add(filelist: std::vec::Vec<String>, name: String) -> () {
-    let mut squashed_list: String = String::new();
-    println!("OG list: {:?}",filelist);
-    //for file in filelist {
-    //    squashed_list += &file.trim();
-    //    squashed_list.push(' '); //hacky
-    //}
-    println!("list: {:?}", squashed_list);
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
@@ -258,7 +270,44 @@ fn history(name: String) -> String {
     }
 }
 
+#[tauri::command]
+fn revert(name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        let _ = std::process::Command::new("svn")
+            .arg("revert")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+    else{
+        let _ = std::process::Command::new("svn")
+            .arg("revert")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
 
+#[tauri::command]
+fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        let _ = std::process::Command::new("svn")
+            .arg("delete")
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
+            .output();
+    }
+    else{
+        println!("path: {:?}", format!("/home/{user}/Documents/SVN/{name}"));
+        let output = std::process::Command::new("svn")
+            .arg("delete")
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//repo is temporary
+            .output();
+        println!("{:?}", output);
+
+    }
+}
 
 fn main() {
     tauri::Builder::default()
@@ -270,7 +319,8 @@ fn main() {
                                                 update,
                                                 revision,
                                                 history,
-                                                revert])
+                                                revert,
+                                                delete])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

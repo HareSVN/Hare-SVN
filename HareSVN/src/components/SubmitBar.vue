@@ -9,6 +9,10 @@
         await invoke("add", {filelist: props.selected, name: props.repo}) //void so wtf am I doing
         emit('updateFiles')
     }
+    async function svnDelete() {
+        await invoke("delete", {filelist: props.selected, name: props.repo})
+        emit('updateFiles')
+    }
     async function svnCommit() {
         console.log(msg.value, props.repo)
         await invoke("commit", {message: msg.value, name: props.repo})
@@ -17,7 +21,7 @@
 </script>
 
 <template>
-    <div class="grid grid-cols-3 h-[10%] w-full bg-slate-600">
+    <div class="grid grid-cols-4 h-[10%] w-full bg-slate-600">
         <div class="flex justify-center items-center pl-2">
             <input id="repo" name="repo" v-model = "msg" type="text" placeholder="commit message" required class="block w-full bg-gray-100 rounded-md py-1 pl-2 mt-2 ring-1 ring-gray-400 shadow-md {{ if active == item ? 'text-blue-100' :'text-red-400'}}"></input>
         </div>
@@ -32,6 +36,12 @@
                 @click="svnCommit"
                 class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
             >Commit</button>
+        </div>
+        <div class="flex justify-center items-center">
+            <button
+                @click="svnDelete"
+                class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            >Delete</button>
         </div>
     </div>
 </template>
