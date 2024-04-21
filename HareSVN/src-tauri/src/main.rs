@@ -1,4 +1,3 @@
-use std::process::Output;
 use std::io::prelude::*;
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
@@ -133,7 +132,7 @@ fn commit(message: String, name: String) -> () {
     let user: String = get_user();
     println!("in the function: {}| {}", message, name);
     if cfg!(target_os = "windows"){
-        let output = std::process::Command::new("svn")
+        let _ = std::process::Command::new("svn")
             .arg("commit")
             .arg("-m")
             .arg(&message)
@@ -141,13 +140,12 @@ fn commit(message: String, name: String) -> () {
             .output();
     }
     else{
-        let output = std::process::Command::new("svn")
+        let _ = std::process::Command::new("svn")
             .arg("commit")
             .arg("-m")
             .arg(&message)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //change dominic to userid
             .output();
-        println!("{:?}", output);
     }
 }
 
@@ -260,8 +258,8 @@ fn history(name: String) -> () {
             .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))//NOT WINDOWS!!
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        let mut output_file = std::fs::File::create("log.txt");
-        output_file.expect("File failed to write all!").write_all(ret.as_bytes());
+        let output_file = std::fs::File::create("log.txt");
+        let _ = output_file.expect("File failed to write all!").write_all(ret.as_bytes());
     }
     else{
         let output = std::process::Command::new("svn")
@@ -317,6 +315,66 @@ fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
     }
 }
 
+#[tauri::command]
+fn makedir(newrepo: String, name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows"){
+        //will just error out
+        let _ = std::process::Command::new("svn")
+            .arg("mkdir")
+            .arg(newrepo)
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else {
+        let _ = std::process::Command::new("svn")
+            .arg("mkdir")
+            .arg(newrepo)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
+//I am just writing nonsense at this point idk if we will ever use lock and unlock but here they are
+#[tauri::command]
+fn lock(filelist: std::vec::Vec<String>, name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("svn")
+            .arg("lock")
+            .args(filelist)
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else{
+        let _ = std::process::Command::new("svn")
+            .arg("lock")
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
+//same thing as before who needs this, I dont think that these people will be admins but idk
+#[tauri::command]
+fn unlock(filelist: std::vec::Vec<String>, name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("svn")
+            .arg("lock")
+            .args(filelist)
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else{
+        let _ = std::process::Command::new("svn")
+            .arg("unlock")
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
@@ -328,7 +386,10 @@ fn main() {
                                                 revision,
                                                 history,
                                                 revert,
-                                                delete])
+                                                delete,
+                                                makedir,
+                                                lock,
+                                                unlock])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
