@@ -434,6 +434,24 @@ fn svnmove(name: String, filelist: std::vec::Vec<String>, destination: String) -
     }
 }
 
+//idk what svn cleanup does
+#[tauri::command]
+fn cleanup(name: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("svn")
+            .arg("cleanup")
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else {
+        let _ = std::process::Command::new("svn")
+            .arg("cleanup")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
@@ -451,7 +469,8 @@ fn main() {
                                                 unlock,
                                                 create,
                                                 copy,
-                                                svnmove])
+                                                svnmove,
+                                                cleanup])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
