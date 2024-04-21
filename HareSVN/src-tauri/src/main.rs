@@ -1,4 +1,4 @@
-use std::process::Output;
+use std::io::Write;
 
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
@@ -250,23 +250,27 @@ Untested
 This returns the entire result from the svn log command, may format as needed
 */
 #[tauri::command]
-fn history(name: String) -> String {
+fn history(name: String) -> () {
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("log")
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//NOT WINDOWS!!
             .output();
-        let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        return ret;
+        let log: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        let path: String = String::from(format!("/home/{user}/svnlog.txt"));
+        let mut output_file: std::fs::File = std::fs::File::create(path).expect("Creating file");
+        write!(output_file, "{}", log);
     }
     else{
         let output = std::process::Command::new("svn")
             .arg("log")
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
-        let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        return ret;
+        let log: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
+        let path: String = String::from(format!("/home/{user}/svnlog.txt"));
+        let mut output_file: std::fs::File = std::fs::File::create(path).expect("Creating File");
+        write!(output_file, "{}", log);
     }
 }
 
