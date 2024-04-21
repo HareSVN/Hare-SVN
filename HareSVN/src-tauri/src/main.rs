@@ -297,20 +297,19 @@ fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("delete")
-            //.arg("--force")
+            .arg("--force")
             .args(filelist)
             .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
             .output();
     }
     else{
         println!("path: {:?}", format!("/home/{user}/Documents/SVN/{name}"));
-        let output = std::process::Command::new("svn")
+        let _ = std::process::Command::new("svn")
             .arg("delete")
+            .arg("--force")
             .args(filelist)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//repo is temporary
             .output();
-        println!("{:?}", output);
-
     }
 }
 
@@ -381,13 +380,55 @@ fn create(name: String, file: String) -> () {
         let _ = std::process::Command::new("cmd")
             .arg("touch")
             .arg(file)
-            .current_dir(format!("C:\\Users||{user}\\Documents\\SVN\\{name}"))
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
             .output();
     }
     else{
         let _ = std::process::Command::new("sh")
             .arg("touch")
             .arg(file)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
+#[tauri::command]
+fn copy(name: String, filelist: std::vec::Vec<String>, destination: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("svn")
+            .arg("copy")
+            .args(filelist)
+            .arg(destination)
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else {
+        let _ = std::process::Command::new("svn")
+            .arg("copy")
+            .args(filelist)
+            .arg(destination)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
+#[tauri::command]
+fn svnmove(name: String, filelist: std::vec::Vec<String>, destination: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("svn")
+            .arg("move")
+            .args(filelist)
+            .arg(destination)
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else {
+        let _ = std::process::Command::new("svn")
+            .arg("move")
+            .args(filelist)
+            .arg(destination)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
     }
@@ -408,7 +449,9 @@ fn main() {
                                                 makedir,
                                                 lock,
                                                 unlock,
-                                                create])
+                                                create,
+                                                copy,
+                                                svnmove])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
