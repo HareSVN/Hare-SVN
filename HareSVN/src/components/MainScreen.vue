@@ -49,7 +49,7 @@ function updateFiles(){
             </div>
             <hr class="border-1 pt-1">
             <div></div>
-            <li v-for="item in props.files" :key="item.fileName" class="" @click="clickItem(item.fileName)" >
+            <li v-for="item in props.files" :key="item.fileName" class="overflow-y-auto" @click="clickItem(item.fileName)" >
                 <div :class="setItemCSS(item.fileName)">
                     <div class="text-center">
                         {{ item.status }}
@@ -60,7 +60,6 @@ function updateFiles(){
                 </div>
                 <hr class="border-1">
             </li>
-            {{ selected }}
         </ul>
         <SubmitBar :selected="selected" :repo="props.repo" @update-files="updateFiles"></SubmitBar>
     </div>

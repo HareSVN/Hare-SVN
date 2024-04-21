@@ -268,17 +268,19 @@ fn history(name: String) -> String {
 }
 
 #[tauri::command]
-fn revert(name: String) -> () {
+fn revert(filelist: std::vec::Vec<String>, name: String) -> () {
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("revert")
+            .args(filelist)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
     }
     else{
         let _ = std::process::Command::new("svn")
             .arg("revert")
+            .args(filelist)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
     }

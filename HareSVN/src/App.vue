@@ -48,7 +48,6 @@ async function updateFiles(){
         <MainScreen class=" pt-3" v-model:selected="selected" :repo="repo" :files = "files" @update-files="updateFiles" ></MainScreen>
       </div>
     </div>
-    {{ selected }}
 </template>
 
 <style scoped>
