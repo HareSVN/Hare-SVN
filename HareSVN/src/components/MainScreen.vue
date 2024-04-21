@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import { RefSymbol } from '@vue/reactivity';
 import { ref } from 'vue';
-//const selected = defineModel<Array<string>>("selected",{default: [""]})
-const select = ref([""])
-
+import SubmitBar from "./SubmitBar.vue";
 const props = defineProps(['repo', 'files'])
-const selected =ref([""])
+const selected =ref<Array<string>>([])
 function clickItem(fileName:string){
     let found=false
     selected.value = selected.value.filter((item)=>{
@@ -18,8 +17,8 @@ function clickItem(fileName:string){
     
     if(found == false)
         selected.value.push(fileName)
-        select.value.push(fileName)
     console.log(selected.value)
+    
     
 }
 function setItemCSS(item:string){
@@ -32,7 +31,7 @@ function setItemCSS(item:string){
 </script>
 
 <template>
-    <div>
+    <div class="flex flex-col w-full min-h-screen justify-between">
 
         <ul class="block w-full bg-gray-50">
             <div class="grid grid-cols-2 pb-4">
@@ -58,6 +57,7 @@ function setItemCSS(item:string){
             </li>
             {{ selected }}
         </ul>
+        <SubmitBar :selected="selected" :repo="props.repo"></SubmitBar>
     </div>
 </template>
 

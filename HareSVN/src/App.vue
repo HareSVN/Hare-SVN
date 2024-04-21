@@ -15,7 +15,6 @@ const selected= ref([""])
       <SideNav class="" v-model:repo="repo" v-model:files="files"></SideNav>
       <div class="flex flex-col w-full min-h-screen justify-between">
         <MainScreen class=" pt-3" v-model:selected="selected" :repo="repo" :files = "files" ></MainScreen>
-        <SubmitBar class=""></SubmitBar>
       </div>
     </div>
     {{ selected }}

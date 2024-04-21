@@ -103,13 +103,15 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
 }
 
 #[tauri::command]
-fn commit(message: String) -> () {
+fn commit(message: String, name:String) -> () {
+    let user: String = get_user();
+    println!("in the function: {}| {}", message, name);
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("commit")
             .arg("-m")
             .arg(&message)
-            .current_dir("/home/dominic/Documents/SVN")//change dominic to userid fix this to work on windows ds
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//change dominic to userid fix this to work on windows ds
             .output();
     }
     else{
@@ -117,9 +119,11 @@ fn commit(message: String) -> () {
             .arg("commit")
             .arg("-m")
             .arg(&message)
-            .current_dir("/home/dominic/Documents/SVN") //change dominic to userid
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //change dominic to userid
             .output();
+        println!("{:?}", output);
     }
+
 }
 
 /*
@@ -130,24 +134,29 @@ How do we actually signify this -> todo
 #[tauri::command]
 fn add(filelist: std::vec::Vec<String>, name: String) -> () {
     let mut squashed_list: String = String::new();
-    for file in filelist {
-        squashed_list += &file;
-        squashed_list.push(' '); //hacky
-    }
+    println!("OG list: {:?}",filelist);
+    //for file in filelist {
+    //    squashed_list += &file.trim();
+    //    squashed_list.push(' '); //hacky
+    //}
+    println!("list: {:?}", squashed_list);
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("add")
-            .arg(squashed_list)
-            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS!!!!!!!!!!!! <--------------------------
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
             .output();
     }
     else{
-        let _ = std::process::Command::new("svn")
+        println!("path: {:?}", format!("/home/{user}/Documents/SVN/{name}"));
+        let output = std::process::Command::new("svn")
             .arg("add")
-            .arg(squashed_list)
-            .current_dir("/home/{user}/Documents/SVN/{name}")//repo is temporary
+            .args(filelist)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//repo is temporary
             .output();
+        println!("{:?}", output);
+
     }
 }
 
