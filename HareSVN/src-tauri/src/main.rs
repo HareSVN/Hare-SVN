@@ -160,18 +160,19 @@ fn add(filelist: std::vec::Vec<String>, name: String) -> () {
 Untested
 Function to execute svn update, must select repository first
 */
+#[tauri::command]
 fn update(name: String) -> () {
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("update")
-            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS !!!!!!!!!!
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS !!!!!!!!!!
             .output();        
     }
     else{
         let _ = std::process::Command::new("svn")
             .arg("update")
-            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
     }
 }
@@ -180,12 +181,13 @@ fn update(name: String) -> () {
 Untested
 Takes the svn info command and reduces it to the revision number
 */
+#[tauri::command]
 fn revision(name: String) -> String {
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("info")
-            .current_dir("/home/{user}/Documents/SVN/{name}") //NOT WINDOWS
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS
             .output();
         let info: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         let mut revision_line: String = String::new();
@@ -205,7 +207,7 @@ fn revision(name: String) -> String {
     else{
         let output = std::process::Command::new("svn")
             .arg("info")
-            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
         let info: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         let mut revision_line: String = String::new();
@@ -227,12 +229,13 @@ fn revision(name: String) -> String {
 Untested
 This returns the entire result from the svn log command, may format as needed
 */
+#[tauri::command]
 fn history(name: String) -> String {
     let user: String = get_user();
-    if !cfg(target_os = "windows"){
+    if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("log")
-            .current_dir("/home/{user}/Documents/SVN/{name}")//NOT WINDOWS!!
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//NOT WINDOWS!!
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         return ret;
@@ -240,7 +243,7 @@ fn history(name: String) -> String {
     else{
         let output = std::process::Command::new("svn")
             .arg("log")
-            .current_dir("/home/{user}/Documents/SVN/{name}")
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         return ret;
@@ -255,7 +258,8 @@ fn main() {
                                                 commit,
                                                 add,
                                                 update,
-                                                revision])
+                                                revision,
+                                                history])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
