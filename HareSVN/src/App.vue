@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import SideNav from "./components/SideNav.vue"
 import MainScreen from "./components/MainScreen.vue"
-import SubmitBar from "./components/SubmitBar.vue";
+//import SubmitBar from "./components/SubmitBar.vue";
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri'
-import { sanitize_files } from "./scripts/sanitze_files";
+//import { sanitize_files } from "./scripts/sanitze_files";
 const repo = ref("")
 const files = ref([{status:"", fileName:""}])
 const selected= ref([""])

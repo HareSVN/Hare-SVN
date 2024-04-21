@@ -246,7 +246,6 @@ fn revision(name: String) -> String {
     }
 }
 /*
-Untested
 This returns the entire result from the svn log command, may format as needed
 */
 #[tauri::command]
@@ -375,6 +374,25 @@ fn unlock(filelist: std::vec::Vec<String>, name: String) -> () {
     }
 }
 
+#[tauri::command]
+fn create(name: String, file: String) -> () {
+    let user: String = get_user();
+    if cfg!(target_os = "windows") {
+        let _ = std::process::Command::new("cmd")
+            .arg("touch")
+            .arg(file)
+            .current_dir(format!("C:\\Users||{user}\\Documents\\SVN\\{name}"))
+            .output();
+    }
+    else{
+        let _ = std::process::Command::new("sh")
+            .arg("touch")
+            .arg(file)
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .output();
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![ 
@@ -389,7 +407,8 @@ fn main() {
                                                 delete,
                                                 makedir,
                                                 lock,
-                                                unlock])
+                                                unlock,
+                                                create])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

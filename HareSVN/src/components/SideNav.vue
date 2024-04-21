@@ -9,6 +9,7 @@ const input = ref({
 const checkout = ref("")
 const result = defineModel("files", {default: [{status:"", fileName:""}]})
 const active = defineModel("repo")
+const fileName = ref("")
 async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
   input.value.name = input.value.url.substring(input.value.url.lastIndexOf("/") + 1, input.value.url.length)
@@ -66,6 +67,10 @@ function setItemCSS(item:string){
 async function updateRepo() {
   await invoke('update', {name:active.value})
 }
+
+async function createFile() {
+  await invoke("create", {name: active.value, file: fileName.value})
+}
 </script>
 
 <template>
@@ -80,7 +85,7 @@ async function updateRepo() {
       </form>
       <hr>
       <div>
-        <p class="block font-bold text-left">Revision Number: {{ revision }}</p>
+        <p class="block font-bold text-left pl-2 pt-2">Revision Number: {{ revision }}</p>
       </div>
       <div class="flex">
         <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">
@@ -88,6 +93,8 @@ async function updateRepo() {
             {{item.name}}
           </div>
           <div class="flex items-end">
+
+            <div class="pr-2 cursor-pointer" @click="createFile">➕</div>
             <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
             <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
           </div>
