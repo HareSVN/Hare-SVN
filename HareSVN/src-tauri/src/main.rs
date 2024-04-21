@@ -258,10 +258,7 @@ fn history(name: String) -> String {
     }
 }
 
-#[tauri::command]
-fn revert(name: String) -> () {
 
-}
 
 fn main() {
     tauri::Builder::default()
