@@ -77,7 +77,7 @@ async function updateRepo() {
       </form>
       <hr>
       <div>
-        <p>Revision Number: {{ revision }}</p>
+        <p class="block font-bold text-left">Revision Number: {{ revision }}</p>
       </div>
       <div class="flex">
         <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">

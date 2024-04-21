@@ -27,6 +27,14 @@ fn checkout(url:String, name: String) -> () {
             .args(["/C", "svn checkout ", &name, " ~/Documents/SVN"])
             .output()
             .expect("Repo failed to chekc out");
+        let user = get_user();
+        let output = std::process::Command::new("svn")
+                .arg("checkout")
+                .arg(&url)
+                .arg(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //may not work test on windows
+                .output()
+                .expect("Repo failed to chekc out");
+            println!("test: {:?}", output);
     } 
     else {
         if !std::path::Path::new("~/Documents/SVN").exists(){
@@ -64,11 +72,10 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
         let output = std::process::Command::new("svn")
             .arg("status") //change to svn Status
             .arg("-v")
-            .current_dir("/")
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
             .output();
         //println!("{:?}", output.expect("Error").stdout.into_iter().map(|x: u8| x as char).collect::<String>());
         let ret_string: String = output.expect("Error doing thing").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        println!("{}", ret_string);
         let mut ret_files: std::vec::Vec<String> = Vec::new();
         let mut line: String = String::new();
         for c in ret_string.chars() {
@@ -96,7 +103,6 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
             .output();
         //println!("{:?}", output.expect("Error").stdout.into_iter().map(|x: u8| x as char).collect::<String>());
         let ret_string: String = output.expect("Error doing thing").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        println!("{}", ret_string);
         let mut ret_files: std::vec::Vec<String> = Vec::new();
         let mut line: String = String::new();
         for c in ret_string.chars() {
@@ -123,7 +129,7 @@ Untested
 Runs svn commit in repo of choice
 */
 #[tauri::command]
-fn commit(message: String, name:String) -> () {
+fn commit(message: String, name: String) -> () {
     let user: String = get_user();
     println!("in the function: {}| {}", message, name);
     if cfg!(target_os = "windows"){
@@ -131,7 +137,7 @@ fn commit(message: String, name:String) -> () {
             .arg("commit")
             .arg("-m")
             .arg(&message)
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//change dominic to userid fix this to work on windows ds
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))//change dominic to userid fix this to work on windows ds
             .output();
     }
     else{
@@ -143,7 +149,6 @@ fn commit(message: String, name:String) -> () {
             .output();
         println!("{:?}", output);
     }
-
 }
 
 /*
@@ -159,7 +164,7 @@ fn add(filelist: std::vec::Vec<String>, name: String) -> () {
         let _ = std::process::Command::new("svn")
             .arg("add")
             .args(filelist)
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
             .output();
     }
     else{
@@ -184,7 +189,7 @@ fn update(name: String) -> () {
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("update")
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS !!!!!!!!!!
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //NOT WINDOWS !!!!!!!!!!
             .output();        
     }
     else{
@@ -204,7 +209,7 @@ fn revision(name: String) -> String {
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("info")
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //NOT WINDOWS
             .output();
         let info: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         let mut revision_line: String = String::new();
@@ -252,7 +257,7 @@ fn history(name: String) -> String {
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
             .arg("log")
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))//NOT WINDOWS!!
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))//NOT WINDOWS!!
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
         return ret;
@@ -274,7 +279,7 @@ fn revert(filelist: std::vec::Vec<String>, name: String) -> () {
         let _ = std::process::Command::new("svn")
             .arg("revert")
             .args(filelist)
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
             .output();
     }
     else{
@@ -294,7 +299,7 @@ fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
             .arg("delete")
             //.arg("--force")
             .args(filelist)
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
+            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
             .output();
     }
     else{
