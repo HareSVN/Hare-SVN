@@ -379,16 +379,14 @@ fn create(name: String, file: String) -> () {
     let user: String = get_user();
     if cfg!(target_os = "windows") {
         let _ = std::process::Command::new("cmd")
-            .arg("touch")
-            .arg(file)
-            .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))
+            .arg("/C")
+            .arg(format!("touch C:\\Users\\{user}\\Documents\\SVN\\{name}\\{file}"))
             .output();
     }
     else{
         let _ = std::process::Command::new("sh")
-            .arg("touch")
-            .arg(file)
-            .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
+            .arg("-c")
+            .arg(format!("touch /home/{user}/Documents/SVN/{name}/{file}"))
             .output();
     }
 }

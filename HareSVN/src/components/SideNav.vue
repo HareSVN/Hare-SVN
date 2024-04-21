@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PopUpFile from "./PopUpFile.vue"
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri'
 const temp = ref([{url:"http:10.8.110.18/repo", name: "repo"}])
@@ -6,10 +7,11 @@ const input = ref({
   url: "",
   name: "",
 })
+const emit =defineEmits(['updateFiles'])
 const checkout = ref("")
 const result = defineModel("files", {default: [{status:"", fileName:""}]})
 const active = defineModel("repo")
-const fileName = ref("")
+//const fileName = ref("")
 async function addRepo(e: { preventDefault: () => void; }){
   e.preventDefault()
   input.value.name = input.value.url.substring(input.value.url.lastIndexOf("/") + 1, input.value.url.length)
@@ -18,7 +20,11 @@ async function addRepo(e: { preventDefault: () => void; }){
   input.value = {url: "", name:""}
 }
 const revision = ref("")
-
+const dir = ref("test")
+function updateFiles(){
+  console.log("UPDATING FILES")
+  emit('updateFiles')
+}
 async function displayRevision(){
   revision.value = await invoke("revision", {name: active.value})
 }
@@ -54,7 +60,10 @@ async function changeActive(item:string){
       return file.split(" ").filter((character)=> character != "")
     })
 }
-
+const popup = ref(false)
+function changePopup(){
+  popup.value = !popup.value
+}
 function setItemCSS(item:string){
   let isActive = "bg-red-200"
   console.log(active, item)
@@ -68,9 +77,6 @@ async function updateRepo() {
   await invoke('update', {name:active.value})
 }
 
-async function createFile() {
-  await invoke("create", {name: active.value, file: fileName.value})
-}
 </script>
 
 <template>
@@ -93,11 +99,12 @@ async function createFile() {
             {{item.name}}
           </div>
           <div class="flex items-end">
-            <div class="pr-2 cursor-pointer" @click="createFile">➕</div>
+            <div class="pr-2 cursor-pointer" @click="changePopup">➕</div>
             <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
             <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
           </div>
         </div>
       </div>
+      <PopUpFile v-if="popup" v-model:popup="popup" v-model:dir="dir" :repo="active" @update-files="updateFiles"/>
     </div>
 </template>
