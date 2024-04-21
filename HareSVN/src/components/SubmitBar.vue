@@ -2,15 +2,17 @@
     import { ref } from 'vue';
     import { invoke } from '@tauri-apps/api/tauri'
     const props = defineProps(['selected', 'repo'])
-    
+    const emit =defineEmits(['updateFiles'])
     const msg = ref<string>("")
 
     async function svnAdd() {
         await invoke("add", {filelist: props.selected, name: props.repo}) //void so wtf am I doing
+        emit('updateFiles')
     }
     async function svnCommit() {
         console.log(msg.value, props.repo)
         await invoke("commit", {message: msg.value, name: props.repo})
+        emit('updateFiles')
     }
 </script>
 
