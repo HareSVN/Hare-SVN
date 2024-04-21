@@ -21,6 +21,9 @@ const revision = ref("")
 async function displayRevision(){
   revision.value = await invoke("revision", {name: active.value})
 }
+async function createLog(){
+  await invoke('history', {name:active.value})
+}
 async function changeActive(item:string){
   displayRevision()
   active.value = item
@@ -84,6 +87,7 @@ async function updateRepo() {
           <div class="pl-5">
             {{item.name}}
           </div>
+          <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
           <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
         </div>
       </div>

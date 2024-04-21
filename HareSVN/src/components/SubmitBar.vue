@@ -6,7 +6,7 @@
     const msg = ref<string>("")
 
     async function svnAdd() {
-        await invoke("add", {filelist: props.selected, name: props.repo}) //void so wtf am I doing
+        await invoke("add", {filelist: props.selected, name: props.repo}) 
         emit('updateFiles')
     }
     async function svnDelete() {

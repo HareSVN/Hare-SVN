@@ -1,5 +1,5 @@
 use std::process::Output;
-
+use std::io::prelude::*;
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #[cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
@@ -252,7 +252,7 @@ Untested
 This returns the entire result from the svn log command, may format as needed
 */
 #[tauri::command]
-fn history(name: String) -> String {
+fn history(name: String) -> () {
     let user: String = get_user();
     if cfg!(target_os = "windows"){
         let output = std::process::Command::new("svn")
@@ -260,7 +260,8 @@ fn history(name: String) -> String {
             .current_dir(format!("C:\\Users\\{user}\\Documents\\SVN\\{name}"))//NOT WINDOWS!!
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        return ret;
+        let mut output_file = std::fs::File::create("log.txt");
+        output_file.expect("File failed to write all!").write_all(ret.as_bytes());
     }
     else{
         let output = std::process::Command::new("svn")
@@ -268,7 +269,9 @@ fn history(name: String) -> String {
             .current_dir(format!("/home/{user}/Documents/SVN/{name}"))
             .output();
         let ret: String = output.expect("Error converting to String in revision function").stdout.into_iter().map(|x: u8| x as char).collect::<String>();
-        return ret;
+        let path: String = String::from(format!("/home/{user}/Documents/SVN/log.txt"));
+        let output_file = std::fs::File::create(path);
+        let _ = output_file.expect("File failed to write all!").write_all(ret.as_bytes());
     }
 }
 
