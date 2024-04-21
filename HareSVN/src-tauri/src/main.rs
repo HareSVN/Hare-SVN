@@ -84,7 +84,7 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
         let output = std::process::Command::new("svn")
             .arg("status")//change to svn status
             .arg("-v")
-            .current_dir("/home/{user}/Documents/SVN/repo") //note hardcoded change dominic to be userprofile 
+            .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //note hardcoded change dominic to be userprofile 
             .output();
         //println!("{:?}", output.expect("Error").stdout.into_iter().map(|x: u8| x as char).collect::<String>());
         let ret_string: String = output.expect("Error doing thing").stdout.into_iter().map(|x: u8| x as char).collect::<String>();

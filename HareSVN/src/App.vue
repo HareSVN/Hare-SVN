@@ -6,12 +6,13 @@ import { ref } from 'vue';
 
 
 const repo = ref("")
+const files = ref([{status:"", fileName:""}])
 </script>
 
 <template>
-  <div >
-    <SideNav v-model:repo="repo"></SideNav>
-    <MainScreen :repo="repo"></MainScreen>
+  <div class="flex grid-cols-2">
+    <SideNav class="" v-model:repo="repo" v-model:files="files"></SideNav>
+    <MainScreen class="pl-10 pt-3" :repo="repo" :files = "files"></MainScreen>
     <SubmitBar></SubmitBar>
   </div>
 </template>
