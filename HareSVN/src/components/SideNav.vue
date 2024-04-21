@@ -87,13 +87,12 @@ async function createFile() {
       <div>
         <p class="block font-bold text-left pl-2 pt-2">Revision Number: {{ revision }}</p>
       </div>
-      <div class="flex">
+      <div>
         <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">
           <div class="pl-5">
             {{item.name}}
           </div>
           <div class="flex items-end">
-
             <div class="pr-2 cursor-pointer" @click="createFile">➕</div>
             <div class="pr-2 cursor-pointer" @click="createLog">⏬</div>
             <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
