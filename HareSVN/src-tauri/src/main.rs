@@ -80,12 +80,11 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
         }
         let mut real_ret: std::vec::Vec<String> = Vec::new();
         for file in ret_files{
-            let path: String = String::from(format!("/home/{user}/Documents/{name}/{file}"));//varies based on os
-            let file_path: &std::path::Path = std::path::Path::new(&path);
-            if file_path.exists(){
+            if file.starts_with("/"){
                 real_ret.push(file);
             }
         }
+        println!("files: {:?}", real_ret);
         return real_ret;
         //return ret_files;
     }
@@ -107,15 +106,13 @@ fn status(name: String) -> std::vec::Vec<String> { //return type temp for debugg
             }
             line.push(c);
         }
+        return ret_files;
         let mut real_ret: std::vec::Vec<String> = Vec::new();
         for file in ret_files{
-            let path: String = String::from(format!("/home/{user}/Documents/{name}/{file}"));//varies based on os
-            let file_path: &std::path::Path = std::path::Path::new(&path);
-            println!("File path: {:?}", file_path.display());
-            if file_path.is_file(){
-                real_ret.push(file);
-            }
+            println!("file: {:?}", file);
+            real_ret.push(file.split_ascii_whitespace().last().unwrap().to_string())
         }
+        println!("files: {:?}", real_ret);
         return real_ret;
         //return ret_files;
     }
@@ -293,6 +290,7 @@ fn delete(filelist: std::vec::Vec<String>, name: String) -> () {
     if cfg!(target_os = "windows"){
         let _ = std::process::Command::new("svn")
             .arg("delete")
+            //.arg("--force")
             .args(filelist)
             .current_dir(format!("/home/{user}/Documents/SVN/{name}")) //NOT WINDOWS!!!!!!!!!!!! <--------------------------
             .output();

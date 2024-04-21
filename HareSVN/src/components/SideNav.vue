@@ -39,7 +39,10 @@ async function changeActive(item:string){
         result.value.push({status: "Modified", fileName: temp[temp.length-1]})
       }
       else if (temp[0].charAt(temp[0].length-1) == "!" && temp[temp.length-1] != "."){
-        result.value.push({status: "Deleted", fileName: temp[temp.length-1]})
+        result.value.push({status: "Missing", fileName: temp[temp.length-1]})
+      }
+      else if (temp[0].charAt(temp[0].length-1) == "D" && temp[temp.length-1] != "."){
+        result.value.push({status: "Deleting", fileName: temp[temp.length-1]})
       }
       else if(temp[temp.length-1] != "." && temp[temp.length-1] != ""){
         result.value.push({status: "Up To Date", fileName: temp[temp.length-1]})
@@ -54,7 +57,11 @@ function setItemCSS(item:string){
   if (active.value == item)
       isActive = "bg-blue-200"
 
-  return `block w-full bg-gray-300 text-center ring-1 my-3 text-lg font-bold ${isActive}`
+  return `flex justify-between w-full bg-gray-300 text-center ring-1 my-3 text-lg font-bold ${isActive}`
+}
+
+async function updateRepo() {
+  await invoke('update', {name:active.value})
 }
 </script>
 
@@ -72,8 +79,13 @@ function setItemCSS(item:string){
       <div>
         <p>Revision Number: {{ revision }}</p>
       </div>
-      <div>
-        <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">{{item.name}}</div>
+      <div class="flex">
+        <div v-for="item in temp" :key="item.name" @click="changeActive(item.name)" :class="setItemCSS(item.name)">
+          <div class="pl-5">
+            {{item.name}}
+          </div>
+          <div class="pr-2 cursor-pointer" @click="updateRepo">🔄</div>
+        </div>
       </div>
     </div>
 

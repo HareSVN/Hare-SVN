@@ -4,7 +4,7 @@ import MainScreen from "./components/MainScreen.vue"
 import SubmitBar from "./components/SubmitBar.vue";
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri'
-
+import { sanitize_files } from "./scripts/sanitze_files";
 const repo = ref("")
 const files = ref([{status:"", fileName:""}])
 const selected= ref([""])
@@ -13,7 +13,7 @@ async function updateFiles(){
   files.value = []
    let temp:Array<string>= await invoke("status", { name:repo.value });
     console.log(temp)
-   temp.map((file:string)=>{
+    temp.map((file:string)=>{
       let temp= file.split(" ").filter((character)=> character != "")
       if (temp[0].charAt(temp[0].length-1) == "?" && temp[temp.length-1] != "."){
         files.value.push({status: "Untracked", fileName: temp[temp.length-1]})
@@ -25,13 +25,17 @@ async function updateFiles(){
         files.value.push({status: "Modified", fileName: temp[temp.length-1]})
       }
       else if (temp[0].charAt(temp[0].length-1) == "!" && temp[temp.length-1] != "."){
-        files.value.push({status: "Deleted", fileName: temp[temp.length-1]})
+        files.value.push({status: "Missing", fileName: temp[temp.length-1]})
+      }
+      else if (temp[0].charAt(temp[0].length-1) == "D" && temp[temp.length-1] != "."){
+        files.value.push({status: "Deleting", fileName: temp[temp.length-1]})
       }
       else if(temp[temp.length-1] != "." && temp[temp.length-1] != ""){
         files.value.push({status: "Up To Date", fileName: temp[temp.length-1]})
       }
       return file.split(" ").filter((character)=> character != "")
     })
+    return files
 }
 
 
